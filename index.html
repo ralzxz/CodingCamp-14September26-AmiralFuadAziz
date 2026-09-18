@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Track your daily expenses and visualize your spending">
+    <title>Expense & Budget Visualizer</title>
+    <link rel="stylesheet" href="css/style.css?v=2.0">
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="app-title">💰 Expense Tracker</h1>
+                <div class="header-actions">
+                    <button class="btn-reset" id="resetBtn" aria-label="Reset all data" title="Reset semua data">
+                        <span>🔄</span>
+                    </button>
+                    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                        <span class="theme-icon">🌙</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            
+            <!-- Balance Section -->
+            <section class="balance-section">
+                <div class="balance-card">
+                    <p class="balance-label">Total Expenses</p>
+                    <h2 class="balance-amount" id="totalBalance">Rp 0</h2>
+                    <div class="limit-alert hidden" id="limitAlert">
+                        <span class="alert-icon">⚠️</span>
+                        <span class="alert-text">Spending limit exceeded!</span>
+                    </div>
+                </div>
+                
+                <!-- Spending Limit Setting -->
+                <div class="limit-setting">
+                    <label for="spendingLimit" class="limit-label">
+                        <span class="limit-icon">🎯</span>
+                        Set Spending Limit
+                    </label>
+                    <input 
+                        type="text" 
+                        id="spendingLimit" 
+                        class="limit-input" 
+                        placeholder="Enter limit amount"
+                        inputmode="numeric"
+                    >
+                </div>
+            </section>
+
+            <!-- Two Column Layout -->
+            <div class="two-column-layout">
+                
+                <!-- Left Column: Form & Transactions -->
+                <div class="left-column">
+                    
+                    <!-- Add Transaction Form -->
+                    <section class="form-section">
+                        <h3 class="section-title">Add New Expense</h3>
+                        <form class="transaction-form" id="transactionForm">
+                            <div class="form-group">
+                                <label for="itemName" class="form-label">Item Name</label>
+                                <input 
+                                    type="text" 
+                                    id="itemName" 
+                                    class="form-input" 
+                                    placeholder="e.g., Lunch, Gas, Movie"
+                                    required
+                                >
+                            </div>
+
+                            <div class="form-group">
+                                <label for="amount" class="form-label">Amount (Rp)</label>
+                                <input 
+                                    type="text" 
+                                    id="amount" 
+                                    class="form-input" 
+                                    placeholder="e.g., 50.000"
+                                    inputmode="numeric"
+                                    required
+                                >
+                            </div>
+
+                            <div class="form-group">
+                                <label for="category" class="form-label">Category</label>
+                                <select id="category" class="form-select" required>
+                                    <option value="">Select category</option>
+                                    <option value="food">🍔 Food</option>
+                                    <option value="transport">🚗 Transport</option>
+                                    <option value="fun">🎮 Fun</option>
+                                </select>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <span class="btn-icon">+</span>
+                                Add Expense
+                            </button>
+                        </form>
+                    </section>
+
+                    <!-- Transactions List -->
+                    <section class="transactions-section">
+                        <div class="section-header">
+                            <h3 class="section-title">Recent Transactions</h3>
+                            <button class="btn-manage-categories" id="manageCategoriesBtn">
+                                <span>⚙️</span> Manage Categories
+                            </button>
+                        </div>
+                        
+                        <div class="transactions-list" id="transactionsList">
+                            <!-- Empty State -->
+                            <div class="empty-state" id="emptyState">
+                                <div class="empty-icon">📝</div>
+                                <p class="empty-text">No transactions yet</p>
+                                <p class="empty-subtext">Add your first expense to get started!</p>
+                            </div>
+
+                            <!-- Sample Transaction Items (will be generated by JS) -->
+                            <div class="transaction-item sample">
+                                <div class="transaction-info">
+                                    <div class="transaction-category-badge food">
+                                        <span class="category-icon">🍔</span>
+                                    </div>
+                                    <div class="transaction-details">
+                                        <h4 class="transaction-name">Sample Lunch</h4>
+                                        <p class="transaction-date">Today</p>
+                                    </div>
+                                </div>
+                                <div class="transaction-actions">
+                                    <span class="transaction-amount">Rp 35,000</span>
+                                    <button class="btn-delete" aria-label="Delete transaction">
+                                        <span>🗑️</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="transaction-item sample">
+                                <div class="transaction-info">
+                                    <div class="transaction-category-badge transport">
+                                        <span class="category-icon">🚗</span>
+                                    </div>
+                                    <div class="transaction-details">
+                                        <h4 class="transaction-name">Gasoline</h4>
+                                        <p class="transaction-date">Today</p>
+                                    </div>
+                                </div>
+                                <div class="transaction-actions">
+                                    <span class="transaction-amount">Rp 150,000</span>
+                                    <button class="btn-delete" aria-label="Delete transaction">
+                                        <span>🗑️</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Right Column: Chart & Category Management -->
+                <div class="right-column">
+                    
+                    <!-- Chart Section -->
+                    <section class="chart-section">
+                        <h3 class="section-title">Spending by Category</h3>
+                        <div class="chart-container">
+                            <canvas id="expenseChart"></canvas>
+                            <div class="chart-empty-state" id="chartEmptyState">
+                                <div class="empty-icon">📊</div>
+                                <p class="empty-text">Chart will appear here</p>
+                                <p class="empty-subtext">Add transactions to see the breakdown</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Category Management Section (Hidden by default) -->
+                    <section class="category-management hidden" id="categoryManagement">
+                        <div class="section-header">
+                            <h3 class="section-title">Manage Categories</h3>
+                            <button class="btn-close" id="closeCategoryManagement">✕</button>
+                        </div>
+
+                        <!-- Add New Category Form -->
+                        <form class="category-form" id="categoryForm">
+                            <div class="form-row">
+                                <div class="form-group flex-grow">
+                                    <label for="categoryName" class="form-label">Category Name</label>
+                                    <input 
+                                        type="text" 
+                                        id="categoryName" 
+                                        class="form-input" 
+                                        placeholder="e.g., Shopping"
+                                        required
+                                    >
+                                </div>
+                                <div class="form-group">
+                                    <label for="categoryColor" class="form-label">Color</label>
+                                    <input 
+                                        type="color" 
+                                        id="categoryColor" 
+                                        class="color-input" 
+                                        value="#2196f3"
+                                    >
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <span class="btn-icon">+</span>
+                                Add Category
+                            </button>
+                        </form>
+
+                        <!-- Categories List -->
+                        <div class="categories-list" id="categoriesList">
+                            <div class="category-item">
+                                <div class="category-item-info">
+                                    <span class="category-color-dot" style="background-color: #ff9800;"></span>
+                                    <span class="category-item-name">🍔 Food</span>
+                                </div>
+                                <div class="category-item-actions">
+                                    <button class="btn-edit" aria-label="Edit category">✏️</button>
+                                    <button class="btn-delete-category" aria-label="Delete category">🗑️</button>
+                                </div>
+                            </div>
+
+                            <div class="category-item">
+                                <div class="category-item-info">
+                                    <span class="category-color-dot" style="background-color: #4caf50;"></span>
+                                    <span class="category-item-name">🚗 Transport</span>
+                                </div>
+                                <div class="category-item-actions">
+                                    <button class="btn-edit" aria-label="Edit category">✏️</button>
+                                    <button class="btn-delete-category" aria-label="Delete category">🗑️</button>
+                                </div>
+                            </div>
+
+                            <div class="category-item">
+                                <div class="category-item-info">
+                                    <span class="category-color-dot" style="background-color: #9c27b0;"></span>
+                                    <span class="category-item-name">🎮 Fun</span>
+                                </div>
+                                <div class="category-item-actions">
+                                    <button class="btn-edit" aria-label="Edit category">✏️</button>
+                                    <button class="btn-delete-category" aria-label="Delete category">🗑️</button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p class="footer-text">Built with 💙 by Amiral Fuad Aziz</p>
+        </div>
+    </footer>
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- Main App Script -->
+    <script src="js/app.js?v=2.0"></script>
+</body>
+</html>
